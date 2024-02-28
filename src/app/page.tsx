@@ -17,7 +17,7 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -46,12 +46,18 @@ const items: MenuItem[] = [
 ];
 
 export default function Home() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [chattext, setChattext] = useState("I'm robot");
   const nameInput = useRef<HTMLInputElement>(null);
+  const chatwindow = useRef(null)
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  useEffect(() => {
+    if(!chatwindow || !chatwindow.current) return
+    chatwindow.current.scrollIntoView({  });
+  },[chattext])
 
   const sendChat = async (input) => {
     console.log(input)
@@ -122,11 +128,11 @@ export default function Home() {
             <Breadcrumb.Item>Home</Breadcrumb.Item>
             <Breadcrumb.Item>AI Chat</Breadcrumb.Item>
           </Breadcrumb>
-          <Paragraph style={{ maxWidth: 440, marginTop: 24 }}>
+          <Paragraph ref={chatwindow} style={{  marginTop: 24 }}>
             <pre style={{ border: "none" }}>{chattext}</pre>
           </Paragraph>
         </Content>
-        <Footer style={{ textAlign: "center" }}>
+        <Footer style={{ textAlign: "center", position:'sticky', zIndex:1, bottom:0  }}>
           <TextArea
             placeholder="Autosize height based on content lines"
             autoSize
