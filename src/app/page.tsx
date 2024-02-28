@@ -47,62 +47,72 @@ const items: MenuItem[] = [
 
 export default function Home() {
   const [collapsed, setCollapsed] = useState(true);
-  const [chattext, setChattext] = useState("I'm robot");
+  const [chattext, setChattext] = useState("");
   const nameInput = useRef<HTMLInputElement>(null);
-  const chatwindow = useRef(null)
+  const chatwindow = useRef(null);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
   useEffect(() => {
-    if(!chatwindow || !chatwindow.current) return
-    chatwindow.current.scrollIntoView({  });
-  },[chattext])
+    if (!chatwindow || !chatwindow.current) return;
+    chatwindow.current.scrollIntoView({});
+  }, [chattext]);
 
-  const sendChat = async (input) => {
-    console.log(input)
-    if(!input) {
-      console.log('No input text')
-      return
-    }
-    const res = await fetch("http://192.168.0.37:11434/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "solar",
-        prompt: input,
-      }),
-    });
-    // The return value is *not* serialized
-    // You can return Date, Map, Set, etc.
+  /**
+   * Sends a chat message to a server and receives a response.
+   * @param input The chat message to send to the server.
+   */
+  const sendChat = async (input: string): Promise<void> => {
+    console.log(input);
 
-    if (!res.ok) {
-      // This will activate the closest `error.js` Error Boundary
-      throw new Error("Failed to fetch data");
+    if (!input) {
+      console.log("No input text");
+      return;
     }
-    const reader = res.body?.getReader();
-    if (!reader) {
-      throw new Error("Failed to get reader");
-    }
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        console.log(`I am done: ${value}`)
-        break;
+
+    try {
+      const response = await fetch("http://192.168.0.37:11434/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "solar",
+          prompt: input,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
       }
-      const textDecoder = new TextDecoder("utf-8");
-      const chunk = textDecoder.decode(value);
-      console.log(`Chunk:${chunk}`)
-      try {
-        const ollamaObject = JSON.parse(chunk)
-        console.log(ollamaObject);
-        setChattext((prev) => prev.concat(ollamaObject.response))
-      } catch (error) {
-        console.log(error)
+
+      const reader = response.body?.getReader();
+
+      if (!reader) {
+        throw new Error("Failed to get reader");
       }
-      
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          console.log(`I am done: ${value}`);
+          break;
+        }
+
+        const textDecoder = new TextDecoder("utf-8");
+        const chunk = textDecoder.decode(value);
+
+        try {
+          const responseObject = JSON.parse(chunk);
+          setChattext((prev) => prev.concat(responseObject.response));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -128,18 +138,27 @@ export default function Home() {
             <Breadcrumb.Item>Home</Breadcrumb.Item>
             <Breadcrumb.Item>AI Chat</Breadcrumb.Item>
           </Breadcrumb>
-          <Paragraph ref={chatwindow} style={{  marginTop: 24 }}>
+          <Paragraph ref={chatwindow} style={{ marginTop: 24 }}>
             <pre style={{ border: "none" }}>{chattext}</pre>
           </Paragraph>
         </Content>
-        <Footer style={{ textAlign: "center", position:'sticky', zIndex:1, bottom:0  }}>
+        <Footer
+          style={{
+            textAlign: "center",
+            position: "sticky",
+            zIndex: 1,
+            bottom: 0,
+          }}
+        >
           <TextArea
             placeholder="Autosize height based on content lines"
             autoSize
             ref={nameInput}
           />
           <Button
-            onClick={async () => {sendChat(nameInput.current.resizableTextArea.textArea.value)}}
+            onClick={async () => {
+              sendChat(nameInput.current.resizableTextArea.textArea.value);
+            }}
           >
             Send
           </Button>
