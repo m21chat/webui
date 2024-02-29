@@ -10,7 +10,7 @@ interface OllamaChatPrompt {
     messages: OllamaMessage[]
 }
 
-const generateChat = async (authToken: string, prompt: OllamaChatPrompt): Promise<{ response: Response | null, controller: AbortController }> => {
+const generateChat = async (prompt: OllamaChatPrompt): Promise<{ response: Response | null, controller: AbortController }> => {
     
     // TODO: Implement later
     // if (!validateAuthToken(authToken)) {
@@ -27,7 +27,6 @@ const generateChat = async (authToken: string, prompt: OllamaChatPrompt): Promis
         method: 'POST',
         headers: {
             'Content-Type': 'text/event-stream',
-            Authorization: `Bearer ${authToken}`
         },
         body: JSON.stringify(prompt)
     }).catch((err) => {
