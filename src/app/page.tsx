@@ -45,9 +45,18 @@ const items: MenuItem[] = [
   getItem("Settings", "2", <FileOutlined />),
 ];
 
+interface ChatConversation {
+  user: string;
+  chat: string;
+}
+
 export default function Home() {
   const [collapsed, setCollapsed] = useState(true);
-  const [chattext, setChattext] = useState("");
+  const [chatHistory, setChatHistory] = useState<ChatConversation[]>([]);
+  
+  const [userInput, setUserInput] = useState('')
+  const [botText, setBotText] = useState("");
+
   const nameInput = useRef<HTMLInputElement>(null);
   const chatwindow = useRef(null);
   const {
@@ -57,19 +66,22 @@ export default function Home() {
   useEffect(() => {
     if (!chatwindow || !chatwindow.current) return;
     chatwindow.current.scrollIntoView({});
-  }, [chattext]);
+  }, [botText]);
 
   /**
    * Sends a chat message to a server and receives a response.
    * @param input The chat message to send to the server.
    */
   const sendChat = async (input: string): Promise<void> => {
-    console.log(input);
 
+    console.log("🚀 ~ sendChat ~ input:", input)
+    
     if (!input) {
       console.log("No input text");
       return;
     }
+
+    setUserInput(input)
 
     try {
       const response = await fetch("http://192.168.0.37:11434/api/generate", {
@@ -92,6 +104,7 @@ export default function Home() {
       if (!reader) {
         throw new Error("Failed to get reader");
       }
+      let historyText: string = "";
 
       while (true) {
         const { done, value } = await reader.read();
@@ -106,11 +119,16 @@ export default function Home() {
 
         try {
           const responseObject = JSON.parse(chunk);
-          setChattext((prev) => prev.concat(responseObject.response));
+          setBotText((prev) => prev.concat(responseObject.response));
+          historyText.concat(responseObject.response);
         } catch (error) {
           console.log(error);
         }
       }
+      setChatHistory((prev) =>
+        prev.concat({ user: input, chat: historyText })
+      );
+      setBotText("");
     } catch (error) {
       console.log(error);
     }
@@ -138,8 +156,16 @@ export default function Home() {
             <Breadcrumb.Item>Home</Breadcrumb.Item>
             <Breadcrumb.Item>AI Chat</Breadcrumb.Item>
           </Breadcrumb>
+          {chatHistory?.map((item, idx) => (
+            <Paragraph key={idx} ref={chatwindow} style={{ marginTop: 24 }}>
+              <pre style={{ border: "none" }}>
+                You said: {item.user}
+                And bot replied: {item.chat}
+              </pre>
+            </Paragraph>
+          ))}
           <Paragraph ref={chatwindow} style={{ marginTop: 24 }}>
-            <pre style={{ border: "none" }}>{chattext}</pre>
+            <pre style={{ border: "none" }}>{botText}</pre>
           </Paragraph>
         </Content>
         <Footer
