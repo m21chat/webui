@@ -10,12 +10,13 @@ interface OllamaChatPrompt {
     messages: OllamaMessage[]
 }
 
-const generateChat = async (prompt: OllamaChatPrompt): Promise<{ response: Response | null, controller: AbortController }> => {
+export const generateChat = async (prompt: OllamaChatPrompt): Promise<{ response: Response | null, controller: AbortController }> => {
     
     // TODO: Implement later
     // if (!validateAuthToken(authToken)) {
     //     throw new Error('Invalid authToken');
     // }
+    
 
     let controller = new AbortController();
     let error = null;
@@ -33,6 +34,7 @@ const generateChat = async (prompt: OllamaChatPrompt): Promise<{ response: Respo
         error = err;
         return null;
     });
+        
 
     if (error) {
         throw error;
@@ -40,3 +42,4 @@ const generateChat = async (prompt: OllamaChatPrompt): Promise<{ response: Respo
 
     return { response: res, controller: controller };
 }
+

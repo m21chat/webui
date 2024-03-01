@@ -19,6 +19,11 @@ import {
 } from "@ant-design/icons";
 import React, { useEffect, useRef, useState } from "react";
 
+import { parseJSON } from "@/utils/parser";
+import useLocalStorage from "use-local-storage";
+
+import { db, startNewConversation } from "@/db/db";
+
 const { Header, Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -51,8 +56,10 @@ interface ChatConversation {
 }
 
 export default function Home() {
+  
   const [collapsed, setCollapsed] = useState(true);
-  const [chatHistory, setChatHistory] = useState<ChatConversation[]>([]);
+  const [history, sethistory] = useLocalStorage('chathistory', [])
+  
   
   const [userInput, setUserInput] = useState('')
   const [botText, setBotText] = useState("");
@@ -74,6 +81,8 @@ export default function Home() {
    */
   const sendChat = async (input: string): Promise<void> => {
 
+    
+
     console.log("🚀 ~ sendChat ~ input:", input)
     
     if (!input) {
@@ -84,51 +93,24 @@ export default function Home() {
     setUserInput(input)
 
     try {
-      const response = await fetch("http://192.168.0.37:11434/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "solar",
-          prompt: input,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
+      const response = await fetch('http://localhost:3000/api', {
+        method:'POST',
+        body:JSON.stringify({message:input})
+      })
+      if (!response.body) {
+        throw new Error('Missing body')
       }
 
-      const reader = response.body?.getReader();
+      const itr = parseJSON(response.body)
+      console.log("🚀 ~ sendChat ~ itr:", itr)
 
-      if (!reader) {
-        throw new Error("Failed to get reader");
+      let assistantResponse = ''
+      for await (const item of itr) {
+        console.log("🚀 ~ forawait ~ message:", item)
+        assistantResponse.concat(item.message.content)
+        setBotText((prev) => prev.concat(item.message.content));
       }
-      let historyText: string = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          console.log(`I am done: ${value}`);
-          break;
-        }
-
-        const textDecoder = new TextDecoder("utf-8");
-        const chunk = textDecoder.decode(value);
-
-        try {
-          const responseObject = JSON.parse(chunk);
-          setBotText((prev) => prev.concat(responseObject.response));
-          historyText.concat(responseObject.response);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      setChatHistory((prev) =>
-        prev.concat({ user: input, chat: historyText })
-      );
-      setBotText("");
+      db.startNewConversation(input, assistantResponse)
     } catch (error) {
       console.log(error);
     }
@@ -156,14 +138,7 @@ export default function Home() {
             <Breadcrumb.Item>Home</Breadcrumb.Item>
             <Breadcrumb.Item>AI Chat</Breadcrumb.Item>
           </Breadcrumb>
-          {chatHistory?.map((item, idx) => (
-            <Paragraph key={idx} ref={chatwindow} style={{ marginTop: 24 }}>
-              <pre style={{ border: "none" }}>
-                You said: {item.user}
-                And bot replied: {item.chat}
-              </pre>
-            </Paragraph>
-          ))}
+
           <Paragraph ref={chatwindow} style={{ marginTop: 24 }}>
             <pre style={{ border: "none" }}>{botText}</pre>
           </Paragraph>
@@ -193,3 +168,4 @@ export default function Home() {
     </Layout>
   );
 }
+
