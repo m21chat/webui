@@ -80,11 +80,7 @@ export default function Home() {
    * @param input The chat message to send to the server.
    */
   const sendChat = async (input: string): Promise<void> => {
-
-    
-
-    console.log("🚀 ~ sendChat ~ input:", input)
-    
+   
     if (!input) {
       console.log("No input text");
       return;
@@ -102,11 +98,10 @@ export default function Home() {
       }
 
       const itr = parseJSON(response.body)
-      console.log("🚀 ~ sendChat ~ itr:", itr)
 
       let assistantResponse = ''
       for await (const item of itr) {
-        console.log("🚀 ~ forawait ~ message:", item)
+        
         assistantResponse.concat(item.message.content)
         setBotText((prev) => prev.concat(item.message.content));
       }
