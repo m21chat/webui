@@ -25,6 +25,7 @@ import useLocalStorage from "use-local-storage";
 import { ChatConversation, db } from "@/db/db";
 import { ChatTabBar } from "./components/ChatTabBar";
 import Item from "antd/es/list/Item";
+import { useLiveQuery } from "dexie-react-hooks";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -53,6 +54,7 @@ const items: MenuItem[] = [
 ];
 
 export default function Home() {
+  
   const [collapsed, setCollapsed] = useState(true);
   const [dialogs, setDialogs] = useState<ChatConversation[]>([]);
 
@@ -65,10 +67,13 @@ export default function Home() {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+
+  const conversationList = useLiveQuery(async () => {
+    return db.conversations.toArray();
+  });
+
   useEffect(() => {
-    db.conversations.toArray((dialog) => {
-      setDialogs(dialog);
-    });
+    
   }, [db.conversations]);
 
   useEffect(() => {
@@ -107,7 +112,7 @@ export default function Home() {
   async function processMessages(itr, userInput) {
     let assistantResponse = '';
     for await (const item of itr) {
-      setDialogs({id:-1, model:'solar', messages:[{id:-1, role:'assistant', content:botText}]})
+      setDialogs([{id:-1, model:'solar', messages:[{id:-1, role:'assistant', content:botText}]}])
       assistantResponse = assistantResponse.concat(item.message.content);
       setBotText((prev) => prev.concat(item.message.content));
   
@@ -116,6 +121,12 @@ export default function Home() {
 
       }
     }
+  }
+
+  if(!conversationList) {
+    return (
+      <div>No dialog</div>
+    )
   }
 
   return (
@@ -141,7 +152,7 @@ export default function Home() {
             <Item>AI Chat</Item>
           </Breadcrumb>
 
-          <ChatTabBar conversations={dialogs} />
+          <ChatTabBar conversations={conversationList} />
         </Content>
         <Footer
           style={{

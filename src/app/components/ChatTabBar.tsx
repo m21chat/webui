@@ -44,9 +44,10 @@ const DraggableTabNode = ({ className, ...props }: DraggableTabPaneProps) => {
 export const ChatTabBar: React.FC<{ conversations: ChatConversation[] }> = ({
   conversations,
 }) => {
+  
 
   if (!conversations) return <div>No chat</div>;
-
+  console.log("🚀 ~ conversations:", conversations)
   const [items, setItems] = useState([]);
 
   const sensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } });
@@ -67,11 +68,10 @@ export const ChatTabBar: React.FC<{ conversations: ChatConversation[] }> = ({
       const tablist:any = []
       
       conversations.map((convo, idx) => {
-
         const tab = {
           key: convo.id?.toString(),
-          label: convo.messages[0].content.slice(0,15),
-          children: <ChatWindow key={convo.id} messages={convo.messages}/>
+          label: `Dialog ${convo.id}`,
+          children: <ChatWindow key={convo.id} dialogId={convo.id ?? 0}/>
         }
         tablist.push(tab)
       })
@@ -103,3 +103,4 @@ export const ChatTabBar: React.FC<{ conversations: ChatConversation[] }> = ({
     />
   );
 };
+  // console.log("🚀 ~ conversations:", conversations)

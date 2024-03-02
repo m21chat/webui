@@ -16,7 +16,7 @@
     "antd": "^5.14.2",
     "dexie": "^3.2.5",
     "dexie-react-hooks": "^1.1.7",
-    "next": "14.1.0",
+    "next": "^14.1.1",
     "ollama": "^0.4.9",
     "react": "^18",
     "react-dom": "^18",
