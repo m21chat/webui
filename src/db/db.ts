@@ -4,6 +4,7 @@ import Dexie, { Table } from 'dexie';
 
 export interface ChatMessage {
   id?: number
+  conversationId: number
   role: string
   content: string
   images?: string
@@ -12,7 +13,6 @@ export interface ChatMessage {
 export interface ChatConversation {
   id?: number;
   model: string;
-  messages: ChatMessage[];
 }
 //TODO: Need encryption
 export class ClientDatabase extends Dexie {
@@ -24,24 +24,30 @@ export class ClientDatabase extends Dexie {
   constructor() {
     super('jmac');
     this.version(1).stores({
-      messages: '++id, role, content, images',
-      conversations: '++id, model, *messages' 
+      conversations: '++id, model',
+      messages: '++id, conversationId, role, content',
     });
   }
 
-  public startNewConversation(input: string, assistantResponse: string) {
-    this.conversations.add({
-      model: 'solar',
-      messages: [
-        {
-          role: 'user',
-          content: input
-        }, {
-          role: 'assistant',
-          content: assistantResponse
-        }
-      ]
+  public async startNewConversation(input: string, assistantResponse: string) {
+    const dialogId = await this.conversations.add({
+      model: 'solar',   
     });
+    
+    this.messages.add({
+      conversationId: dialogId as number, //Hehe, secret hack that no one will know about.
+      role:'user',
+      content:input
+    })
+
+    this.messages.add({
+      conversationId: dialogId as number,
+      role: 'assistant',
+      content: assistantResponse
+    })
+
+    
+    
   }
 }
 

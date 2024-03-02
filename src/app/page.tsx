@@ -22,7 +22,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { parseJSON } from "@/utils/parser";
 import useLocalStorage from "use-local-storage";
 
-import { db, startNewConversation } from "@/db/db";
+import { ChatConversation, db } from "@/db/db";
+import { ChatTabBar } from "./components/ChatTabBar";
+import Item from "antd/es/list/Item";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -50,18 +52,11 @@ const items: MenuItem[] = [
   getItem("Settings", "2", <FileOutlined />),
 ];
 
-interface ChatConversation {
-  user: string;
-  chat: string;
-}
-
 export default function Home() {
-  
   const [collapsed, setCollapsed] = useState(true);
-  const [history, sethistory] = useLocalStorage('chathistory', [])
-  
-  
-  const [userInput, setUserInput] = useState('')
+  const [dialogs, setDialogs] = useState<ChatConversation[]>([]);
+
+  const [userInput, setUserInput] = useState("");
   const [botText, setBotText] = useState("");
 
   const nameInput = useRef<HTMLInputElement>(null);
@@ -69,6 +64,12 @@ export default function Home() {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  useEffect(() => {
+    db.conversations.toArray((dialog) => {
+      setDialogs(dialog);
+    });
+  }, [db.conversations]);
 
   useEffect(() => {
     if (!chatwindow || !chatwindow.current) return;
@@ -80,36 +81,42 @@ export default function Home() {
    * @param input The chat message to send to the server.
    */
   const sendChat = async (input: string): Promise<void> => {
-   
     if (!input) {
       console.log("No input text");
       return;
     }
 
-    setUserInput(input)
+    setUserInput(input);
 
     try {
-      const response = await fetch('http://localhost:3000/api', {
-        method:'POST',
-        body:JSON.stringify({message:input})
-      })
+      const response = await fetch("http://localhost:3000/api", {
+        method: "POST",
+        body: JSON.stringify({ message: input }),
+      });
       if (!response.body) {
-        throw new Error('Missing body')
+        throw new Error("Missing body");
       }
 
-      const itr = parseJSON(response.body)
-
-      let assistantResponse = ''
-      for await (const item of itr) {
-        
-        assistantResponse.concat(item.message.content)
-        setBotText((prev) => prev.concat(item.message.content));
-      }
-      db.startNewConversation(input, assistantResponse)
+      const itr = parseJSON(response.body);
+      await processMessages(itr, input); 
     } catch (error) {
       console.log(error);
     }
   };
+
+  async function processMessages(itr, userInput) {
+    let assistantResponse = '';
+    for await (const item of itr) {
+      setDialogs({id:-1, model:'solar', messages:[{id:-1, role:'assistant', content:botText}]})
+      assistantResponse = assistantResponse.concat(item.message.content);
+      setBotText((prev) => prev.concat(item.message.content));
+  
+      if (item.done) { 
+        db.startNewConversation(userInput, assistantResponse);
+
+      }
+    }
+  }
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -130,13 +137,11 @@ export default function Home() {
         <Header style={{ padding: 0, background: colorBgContainer }} />
         <Content style={{ margin: "0 16px" }}>
           <Breadcrumb style={{ margin: "16px 0" }}>
-            <Breadcrumb.Item>Home</Breadcrumb.Item>
-            <Breadcrumb.Item>AI Chat</Breadcrumb.Item>
+            <Item>Home</Item>
+            <Item>AI Chat</Item>
           </Breadcrumb>
 
-          <Paragraph ref={chatwindow} style={{ marginTop: 24 }}>
-            <pre style={{ border: "none" }}>{botText}</pre>
-          </Paragraph>
+          <ChatTabBar conversations={dialogs} />
         </Content>
         <Footer
           style={{
@@ -163,4 +168,3 @@ export default function Home() {
     </Layout>
   );
 }
-
