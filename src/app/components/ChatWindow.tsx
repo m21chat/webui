@@ -1,13 +1,16 @@
 import { ChatMessage, db } from "@/db/db";
-import { Tag } from "antd";
+import { Avatar, Card, Tag } from "antd";
 import { useLiveQuery } from "dexie-react-hooks";
 import React, { useEffect, useState } from "react";
+import '../globals.css'
+
 
 import {
   RobotOutlined,
   TwitterOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import Meta from "antd/es/card/Meta";
 
 export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
   console.log("🚀 ~ dialogId:", dialogId);
@@ -27,23 +30,30 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
     }
   }, []);
 
+  
+
   if (!dialogMsgs) return <></>;
 
   return (
-    <div >
+    <div>
       {dialogMsgs.map((msg, idx) => (
-        <div style={{marginBottom:'1em'}}key={idx}>
-          {msg.role === "user" ? (
-            <Tag icon={<UserOutlined />} color="#4f772d">
-              Humanoid
-            </Tag>
-          ) : (
-            <Tag icon={<RobotOutlined />} color="#2b2d42">
-              Overlord
-            </Tag>
-          )}
-          {msg.content}
-        </div>
+        <Card style={{ width: 700, marginTop: 16 }} >
+        <Meta
+            avatar={msg.role === "user" ? ( 
+                    <Avatar src={`https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${dialogId}`} /> 
+                  ) : (
+                     <Avatar src={`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${dialogId}`} />
+                  )}
+            title={msg.role === "user" ? (
+              "Haplorhini"
+            ) : ( 
+              `JMAC v${process.env.NEXT_PUBLIC_APP_VERSION}`
+            )}
+            description={msg.content}
+        />
+      </Card>
+
+        
       ))}
     </div>
   );
