@@ -27,21 +27,24 @@ export class ClientDatabase extends Dexie {
     });
   }
 
-  public async startNewConversation(input: string, assistantResponse: string) {
+  public async startNewConversation() {
     const dialogId = await this.conversations.add({
       model: "solar",
     });
+    return dialogId as number
+  }
 
+  public async addDialog(converstationId:number, userMsg:string, assistantMsg:string) {
     this.messages.add({
-      conversationId: dialogId as number, //Hehe, secret hack that no one will know about.
+      conversationId: converstationId as number, //Hehe, secret hack that no one will know about.
       role: "user",
-      content: input,
+      content: userMsg,
     });
 
     this.messages.add({
-      conversationId: dialogId as number,
+      conversationId: converstationId as number,
       role: "assistant",
-      content: assistantResponse,
+      content: assistantMsg,
     });
   }
 

@@ -1,9 +1,13 @@
 import { ChatMessage, db } from "@/db/db";
+import { useLiveQuery } from "dexie-react-hooks";
 import React, { useEffect, useState } from "react";
 
 export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
   console.log("🚀 ~ dialogId:", dialogId);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const dialogMsgs = useLiveQuery(async () => {
+    return db.messages.where("conversationId").equals(dialogId).toArray();
+  });
 
   useEffect(() => {
     // db.delete()
@@ -16,9 +20,11 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
     }
   }, []);
 
+  if (!dialogMsgs) return <></>
+
   return (
     <div>
-      {messages.map((msg,idx)=> (
+      {dialogMsgs.map((msg,idx)=> (
             <div key={idx}>{msg.content}</div>
         ))}
     </div>

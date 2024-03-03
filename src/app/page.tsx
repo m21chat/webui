@@ -56,7 +56,8 @@ const items: MenuItem[] = [
 export default function Home() {
   
   const [collapsed, setCollapsed] = useState(true);
-  const [dialogs, setDialogs] = useState<ChatConversation[]>([]);
+  const [conversations, setConversations] = useState<ChatConversation[]>([]);
+  const [currentConversation, SetCurrentConversation] = useState('')
 
   const [userInput, setUserInput] = useState("");
   const [botText, setBotText] = useState("");
@@ -72,9 +73,9 @@ export default function Home() {
     return db.conversations.toArray();
   });
 
-  useEffect(() => {
-    
-  }, [db.conversations]);
+
+
+
 
   useEffect(() => {
     if (!chatwindow || !chatwindow.current) return;
@@ -112,13 +113,12 @@ export default function Home() {
   async function processMessages(itr, userInput) {
     let assistantResponse = '';
     for await (const item of itr) {
-      setDialogs([{id:-1, model:'solar', messages:[{id:-1, role:'assistant', content:botText}]}])
+      setConversations([{id:-1, model:'solar', messages:[{id:-1, role:'assistant', content:botText}]}])
       assistantResponse = assistantResponse.concat(item.message.content);
       setBotText((prev) => prev.concat(item.message.content));
   
       if (item.done) { 
-        db.startNewConversation(userInput, assistantResponse);
-
+        db.addDialog(Number(currentConversation), userInput, assistantResponse)
       }
     }
   }
@@ -127,6 +127,10 @@ export default function Home() {
     return (
       <div>No dialog</div>
     )
+  }
+
+  const onTabUpdate = (tabId:string) => {
+    SetCurrentConversation(tabId)
   }
 
   return (
@@ -151,8 +155,8 @@ export default function Home() {
             <Item>Home</Item>
             <Item>AI Chat</Item>
           </Breadcrumb>
-
-          <ChatTabBar conversations={conversationList} />
+          <Button onClick={() => {db.startNewConversation()}}>New</Button>
+          <ChatTabBar props={{conversations:conversationList,onTabChange:onTabUpdate}}/>
         </Content>
         <Footer
           style={{
