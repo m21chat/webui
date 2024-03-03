@@ -1,3 +1,7 @@
+//TODOLIST:
+// - ADD Chat badge to count how many convo there is in each tab.
+
+
 import type { DragEndEvent } from "@dnd-kit/core";
 import { DndContext, PointerSensor, useSensor } from "@dnd-kit/core";
 import {
