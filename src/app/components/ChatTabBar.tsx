@@ -50,7 +50,7 @@ export const ChatTabBar: React.FC<{ props:ChatTabBarprops }> = ({
   props,
 }) => {
   if (!props || !props.conversations) return <div>No chat</div>;
-  console.log("🚀 ~ conversations:", props.conversations);
+  // console.log("🚀 ~ conversations:", props.conversations);
   const [items, setItems] = useState([]);
   const [activeTab, setActiveTab] = useState("1")
 
