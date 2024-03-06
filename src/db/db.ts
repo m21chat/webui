@@ -5,6 +5,7 @@ export interface ChatMessage {
   conversationId: number;
   role: string;
   content: string;
+  complete: boolean
   images?: string;
 }
 
@@ -21,9 +22,9 @@ export class ClientDatabase extends Dexie {
 
   constructor() {
     super("jmac");
-    this.version(2).stores({
+    this.version(3).stores({
       conversations: "++id, model",
-      messages: "++id, conversationId, role, content",
+      messages: "++id, conversationId, role, content, complete",
     });
   }
 
@@ -34,19 +35,31 @@ export class ClientDatabase extends Dexie {
     return dialogId as number
   }
 
-  public async addDialog(converstationId:number, userMsg:string, assistantMsg:string) {
-    this.messages.add({
-      conversationId: converstationId as number, //Hehe, secret hack that no one will know about.
-      role: "user",
-      content: userMsg,
-    });
+  public async addMessage(conversationId:number, role:string, message:string, complete:boolean, messageId?:number) {
+    const msgId = await this.messages.put({
+      id:messageId,
+      role: role,
+      conversationId:conversationId,
+      complete:complete,
+      content:message
+    })
+    return msgId as number
+  } 
 
-    this.messages.add({
-      conversationId: converstationId as number,
-      role: "assistant",
-      content: assistantMsg,
-    });
-  }
+  // public async addDialog(converstationId:number, userMsg:string, assistantMsg:string) {
+  //   this.messages.add({
+  //     conversationId: converstationId as number, //Hehe, secret hack that no one will know about.
+  //     role: "user",
+  //     content: userMsg,
+  //   });
+
+  //   const assistantResult = await this.messages.add({
+  //     conversationId: converstationId as number,
+  //     role: "assistant",
+  //     content: assistantMsg,
+  //   });
+  //   console.log("🚀 ~ ClientDatabase ~ addDialog ~ assistantResult:", assistantResult)  
+  // }
 
   public deleteDatabase(dbname:string) {
     db.delete()

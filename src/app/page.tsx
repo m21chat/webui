@@ -77,13 +77,14 @@ export default function Home() {
     }
 
     setUserInput(input);
+    db.addMessage(Number(currentConversation), "user", input, true);
 
     try {
       const response = await fetch("http://localhost:3000/api", {
         method: "POST",
         body: JSON.stringify({ message: input }),
       });
-      
+
       if (!response.body) {
         throw new Error("Missing body, ARRRGGHHHH!!!");
       }
@@ -98,20 +99,39 @@ export default function Home() {
 
   /**
    * Processes the messages received from the server and updates the assistant response.
-   * 
+   *
    * @param itr The iterator containing the messages received from the server.
    * @param userInput The user input message.
    * @returns {Promise<void>}
    */
   async function processMessages(itr, userInput): Promise<void> {
     let assistantResponse = "";
+    const msgId = await db.addMessage(
+      Number(currentConversation),
+      "assistant",
+      "",
+      false
+    );
     for await (const item of itr) {
       assistantResponse = assistantResponse.concat(item.message.content);
       setBotText((prev) => prev.concat(item.message.content));
+      db.addMessage(
+        Number(currentConversation),
+        'assistant',
+        assistantResponse,
+        false,
+        msgId
+      );
 
       if (item.done) {
-        db.addDialog(Number(currentConversation), userInput, assistantResponse);
-      } 
+        db.addMessage(
+          Number(currentConversation),
+          'assistant',
+          assistantResponse,
+          true,
+          msgId
+        );
+      }
     }
   }
 
@@ -186,7 +206,7 @@ export default function Home() {
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
           />
-          <Button  //TODO: #9 Make send button bit more interesting
+          <Button //TODO: #9 Make send button bit more interesting
             onClick={async () => {
               sendChat(userInput);
               clearUserInputField();
