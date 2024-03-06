@@ -87,7 +87,6 @@ export const ChatTabBar: React.FC<{ props:ChatTabBarprops }> = ({
   return (
     <Tabs
       items={items}
-      // activeKey={activeTab}
       onChange={props.onTabChange}
       renderTabBar={(tabBarProps, DefaultTabBar) => (
         <DndContext sensors={[sensor]} onDragEnd={onDragEnd}>
