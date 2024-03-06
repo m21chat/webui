@@ -77,6 +77,7 @@ export default function Home() {
     }
 
     setUserInput(input);
+    db.addMessage(Number(currentConversation),'user', input,true)
 
     try {
       const response = await fetch("http://localhost:3000/api", {
@@ -105,12 +106,14 @@ export default function Home() {
    */
   async function processMessages(itr, userInput): Promise<void> {
     let assistantResponse = "";
+    const msgId = await db.addMessage(Number(currentConversation), 'assistant', '', false)
     for await (const item of itr) {
       assistantResponse = assistantResponse.concat(item.message.content);
       setBotText((prev) => prev.concat(item.message.content));
+      db.addMessage(Number(currentConversation), userInput, assistantResponse, false, msgId);
 
       if (item.done) {
-        db.addDialog(Number(currentConversation), userInput, assistantResponse);
+        db.addMessage(Number(currentConversation), userInput, assistantResponse, true, msgId);
       } 
     }
   }
