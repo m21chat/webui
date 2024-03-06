@@ -31,7 +31,6 @@ const { Header, Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
 
-const { TextArea } = Input;
 const { Paragraph } = Typography;
 
 function getItem(
@@ -54,33 +53,22 @@ const items: MenuItem[] = [
 ];
 
 export default function Home() {
-  
   const [collapsed, setCollapsed] = useState(true);
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
-  const [currentConversation, SetCurrentConversation] = useState('')
+  const [currentConversation, SetCurrentConversation] = useState("");
 
   const [userInput, setUserInput] = useState("");
   const [botText, setBotText] = useState("");
 
-  const nameInput = useRef<HTMLInputElement>(null);
+  const nameInput = useRef<typeof Input>(null);
   const chatwindow = useRef(null);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-
   const conversationList = useLiveQuery(async () => {
     return db.conversations.toArray();
   });
-
-
-
-
-
-  useEffect(() => {
-    if (!chatwindow || !chatwindow.current) return;
-    chatwindow.current.scrollIntoView({});
-  }, [botText]);
 
   /**
    * Sends a chat message to a server and receives a response.
@@ -88,7 +76,6 @@ export default function Home() {
    */
   const sendChat = async (input: string): Promise<void> => {
     if (!input) {
-      console.log("No input text");
       return;
     }
 
@@ -99,39 +86,57 @@ export default function Home() {
         method: "POST",
         body: JSON.stringify({ message: input }),
       });
+      
       if (!response.body) {
-        throw new Error("Missing body");
+        throw new Error("Missing body, ARRRGGHHHH!!!");
       }
 
       const itr = parseJSON(response.body);
-      await processMessages(itr, input); 
+      await processMessages(itr, input);
     } catch (error) {
       console.log(error);
+      // Handle network errors here
     }
   };
 
+  /**
+   * Processes the messages received from the server and updates the assistant response.
+   * 
+   * @param itr The iterator containing the messages received from the server.
+   * @param userInput The user input message.
+   * @returns {Promise<void>}
+   */
   async function processMessages(itr, userInput) {
-    let assistantResponse = '';
+    let assistantResponse = "";
     for await (const item of itr) {
-      setConversations([{id:-1, model:'solar', messages:[{id:-1, role:'assistant', content:botText}]}])
       assistantResponse = assistantResponse.concat(item.message.content);
       setBotText((prev) => prev.concat(item.message.content));
-  
-      if (item.done) { 
-        db.addDialog(Number(currentConversation), userInput, assistantResponse)
-      }
+
+      if (item.done) {
+        db.addDialog(Number(currentConversation), userInput, assistantResponse);
+      } 
     }
   }
 
-  if(!conversationList) {
-    return (
-      <div>No dialog</div>
-    )
+  //TODO: #7 Make waiting for messages load less boring
+  if (!conversationList) {
+    return <div>No dialog</div>;
   }
 
-  const onTabUpdate = (tabId:string) => {
-    SetCurrentConversation(tabId)
-  }
+  const onTabUpdate = (tabId: string) => {
+    SetCurrentConversation(tabId);
+  };
+
+  const clearUserInputField = () => {
+    setUserInput("");
+  };
+
+  const onInputKeyDown = (e: KeyboardEvent) => {
+    if (e.code === "Enter" && e.ctrlKey && userInput !== "") {
+      sendChat(userInput);
+      clearUserInputField();
+    }
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -155,8 +160,19 @@ export default function Home() {
             <Item>Home</Item>
             <Item>AI Chat</Item>
           </Breadcrumb>
-          <Button onClick={() => {db.startNewConversation()}}>New</Button>
-          <ChatTabBar props={{conversations:conversationList,onTabChange:onTabUpdate}}/>
+          <Button
+            onClick={() => {
+              db.startNewConversation();
+            }}
+          >
+            New
+          </Button>
+          <ChatTabBar
+            props={{
+              conversations: conversationList,
+              onTabChange: onTabUpdate,
+            }}
+          />
         </Content>
         <Footer
           style={{
@@ -166,14 +182,17 @@ export default function Home() {
             bottom: 0,
           }}
         >
-          <TextArea
-            placeholder="Autosize height based on content lines"
+          <Input
+            placeholder="Talk to JMAC here"
+            onKeyDown={onInputKeyDown}
             autoSize
-            ref={nameInput}
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
           />
-          <Button
+          <Button  //TODO: #9 Make send button bit more interesting
             onClick={async () => {
-              sendChat(nameInput.current.resizableTextArea.textArea.value);
+              sendChat(userInput);
+              clearUserInputField();
             }}
           >
             Send
