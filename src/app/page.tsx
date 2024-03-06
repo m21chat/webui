@@ -117,7 +117,7 @@ export default function Home() {
       setBotText((prev) => prev.concat(item.message.content));
       db.addMessage(
         Number(currentConversation),
-        userInput,
+        'assistant',
         assistantResponse,
         false,
         msgId
@@ -126,7 +126,7 @@ export default function Home() {
       if (item.done) {
         db.addMessage(
           Number(currentConversation),
-          userInput,
+          'assistant',
           assistantResponse,
           true,
           msgId

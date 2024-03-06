@@ -64,6 +64,7 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
       renderItem={(item) => (
         <List.Item
           key={item.role}
+          style={{ whiteSpace: 'pre-wrap' }}
           // actions={[  //FOR LATER
           //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
           //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
@@ -90,6 +91,7 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
             description="Placeholder for date and other things"
           />
           {item.content}
+          
         </List.Item>
       )}
     />
