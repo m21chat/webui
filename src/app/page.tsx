@@ -55,7 +55,7 @@ const items: MenuItem[] = [
 export default function Home() {
   const [collapsed, setCollapsed] = useState(true);
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
-  const [currentConversation, SetCurrentConversation] = useState("");
+  const [currentConversation, SetCurrentConversation] = useState("1");
 
   const [userInput, setUserInput] = useState("");
   const [botText, setBotText] = useState("");
@@ -106,7 +106,7 @@ export default function Home() {
    * @param userInput The user input message.
    * @returns {Promise<void>}
    */
-  async function processMessages(itr, userInput) {
+  async function processMessages(itr, userInput): Promise<void> {
     let assistantResponse = "";
     for await (const item of itr) {
       assistantResponse = assistantResponse.concat(item.message.content);
