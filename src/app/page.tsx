@@ -31,7 +31,6 @@ const { Header, Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
 
-
 const { Paragraph } = Typography;
 
 function getItem(
@@ -71,19 +70,12 @@ export default function Home() {
     return db.conversations.toArray();
   });
 
-  useEffect(() => {
-    if (!chatwindow || !chatwindow.current) return;
-    chatwindow.current.scrollIntoView({});
-  }, [botText]);
-
   /**
    * Sends a chat message to a server and receives a response.
    * @param input The chat message to send to the server.
    */
   const sendChat = async (input: string): Promise<void> => {
-    console.log("Sending chat");
     if (!input) {
-      console.log("No input text");
       return;
     }
 
@@ -94,9 +86,9 @@ export default function Home() {
         method: "POST",
         body: JSON.stringify({ message: input }),
       });
-      1;
+      
       if (!response.body) {
-        throw new Error("Missing body");
+        throw new Error("Missing body, ARRRGGHHHH!!!");
       }
 
       const itr = parseJSON(response.body);
@@ -109,13 +101,6 @@ export default function Home() {
   async function processMessages(itr, userInput) {
     let assistantResponse = "";
     for await (const item of itr) {
-      setConversations([
-        {
-          id: -1,
-          model: "solar",
-          messages: [{ id: -1, role: "assistant", content: botText }],
-        },
-      ]);
       assistantResponse = assistantResponse.concat(item.message.content);
       setBotText((prev) => prev.concat(item.message.content));
 
@@ -133,20 +118,14 @@ export default function Home() {
     SetCurrentConversation(tabId);
   };
 
-
   const clearUserInputField = () => {
-    setUserInput('')
-  }
+    setUserInput("");
+  };
 
   const onInputKeyDown = (e: KeyboardEvent) => {
-    
     if (e.code === "Enter" && e.ctrlKey) {
-      console.log(e)
-      console.log(nameInput.current)
-      sendChat(userInput)
-      clearUserInputField()
-      // nameInput.current.clear()
-      // sendChat(e.target.value);
+      sendChat(userInput);
+      clearUserInputField();
     }
   };
 
@@ -204,7 +183,7 @@ export default function Home() {
           <Button
             onClick={async () => {
               sendChat(userInput);
-              clearUserInputField()              
+              clearUserInputField();
             }}
           >
             Send
