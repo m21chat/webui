@@ -12,9 +12,6 @@ import {
 import Meta from "antd/es/card/Meta";
 
 export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
-  console.log("🚀 ~ dialogId:", dialogId);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-
   const dialogMsgs = useLiveQuery(async () => {
     return db.messages.where("conversationId").equals(dialogId).toArray();
   });
