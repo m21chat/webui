@@ -183,13 +183,13 @@ export default function Home() {
           }}
         >
           <Input
-            placeholder="Autosize height based on content lines"
+            placeholder="Talk to JMAC here"
             onKeyDown={onInputKeyDown}
             autoSize
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
           />
-          <Button
+          <Button  //TODO: #9 Make send button bit more interesting
             onClick={async () => {
               sendChat(userInput);
               clearUserInputField();
