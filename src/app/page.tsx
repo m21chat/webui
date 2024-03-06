@@ -54,16 +54,13 @@ const items: MenuItem[] = [
 
 export default function Home() {
   const [collapsed, setCollapsed] = useState(true);
-  const [conversations, setConversations] = useState<ChatConversation[]>([]);
   const [currentConversation, SetCurrentConversation] = useState("1");
 
   const [userInput, setUserInput] = useState("");
   const [botText, setBotText] = useState("");
 
-  const nameInput = useRef<typeof Input>(null);
-  const chatwindow = useRef(null);
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = theme.useToken();
 
   const conversationList = useLiveQuery(async () => {
