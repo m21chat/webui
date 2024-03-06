@@ -95,9 +95,17 @@ export default function Home() {
       await processMessages(itr, input);
     } catch (error) {
       console.log(error);
+      // Handle network errors here
     }
   };
 
+  /**
+   * Processes the messages received from the server and updates the assistant response.
+   * 
+   * @param itr The iterator containing the messages received from the server.
+   * @param userInput The user input message.
+   * @returns {Promise<void>}
+   */
   async function processMessages(itr, userInput) {
     let assistantResponse = "";
     for await (const item of itr) {
@@ -106,10 +114,11 @@ export default function Home() {
 
       if (item.done) {
         db.addDialog(Number(currentConversation), userInput, assistantResponse);
-      }
+      } 
     }
   }
 
+  //TODO: #7 Make waiting for messages load less boring
   if (!conversationList) {
     return <div>No dialog</div>;
   }
@@ -123,7 +132,7 @@ export default function Home() {
   };
 
   const onInputKeyDown = (e: KeyboardEvent) => {
-    if (e.code === "Enter" && e.ctrlKey) {
+    if (e.code === "Enter" && e.ctrlKey && userInput !== "") {
       sendChat(userInput);
       clearUserInputField();
     }
