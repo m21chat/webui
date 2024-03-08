@@ -16,11 +16,9 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
     if (dialogMsgs && dialogMsgs.length > 0) {
       listRef.current;
       const lastMessageID = dialogMsgs[dialogMsgs.length - 1];
-      console.log(`MessageID : ${lastMessageID.id}`);
       const element = document.getElementById(
         `dialogcard-${String(lastMessageID.id)}`,
       );
-      console.log(`dialogElement: ${element}`);
       if (element) {
         element.scrollIntoView();
       } else {
