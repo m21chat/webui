@@ -177,14 +177,7 @@ export default function Home() {
             }}
           />
         </Content>
-        <Footer
-          style={{
-            textAlign: "center",
-            position: "sticky",
-            zIndex: 1,
-            bottom: 0,
-          }}
-        >
+        <Footer className="flex items-center justify-between sticky align-text-center z-1 bottom-0 space-x-2">
           <Input
             placeholder="Talk to JMAC here"
             onKeyDown={onInputKeyDown}
@@ -193,6 +186,7 @@ export default function Home() {
             onChange={(e) => setUserInput(e.target.value)}
           />
           <Button //TODO: #9 Make send button bit more interesting
+            disabled={chatProgress?.isInProgress}
             onClick={async () => {
               sendChat(userInput);
               clearUserInputField();

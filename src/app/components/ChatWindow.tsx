@@ -1,10 +1,11 @@
 import { db } from "@/db/db";
 import { Avatar, List, Spin } from "antd";
 import { useLiveQuery } from "dexie-react-hooks";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import "../globals.css";
 import { chatProgressAtom } from "../store/chatState";
 import { useAtom } from "jotai";
+import hljs from "highlight.js";
 
 export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
   const listRef = useRef(null);
@@ -28,8 +29,38 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
       }
     }
   }, [dialogMsgs]);
+  useEffect(() => {
+    const codeBlocks = document.querySelectorAll("pre code");
+
+    codeBlocks.forEach((block) => {
+      if (block instanceof HTMLElement) {
+        hljs.highlightElement(block);
+      }
+    });
+  }, [dialogMsgs]);
 
   if (!dialogMsgs) return <></>;
+
+  const splittext = (content: string) => {
+    const parts = content.split(/```/);
+    return parts.map((part, index) => {
+      if (index % 2 === 1) {
+        const [language, ...codeLines] = part.split("\n");
+        const code = codeLines.join("\n").trim();
+        console.log(`Detect lang: ${language}, code: ${code}`);
+        if (code) {
+          return (
+            <pre key={index}>
+              <code className={`language-${language.trim()}`}>
+                {code.trim()}
+              </code>
+            </pre>
+          );
+        }
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
 
   //ICONText will be used later when we add more functions to the chat items
   //const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
@@ -80,7 +111,7 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
             }
             description="Placeholder for date and other things"
           />
-          {item.content}
+          {splittext(item.content)}
         </List.Item>
       )}
     />
