@@ -1,5 +1,13 @@
 "use client";
-import { Breadcrumb, Button, Input, Layout, Menu, theme } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  Input,
+  Layout,
+  Menu,
+  ConfigProvider,
+  theme,
+} from "antd";
 
 import type { MenuProps } from "antd";
 import { FileOutlined, PieChartOutlined } from "@ant-design/icons";
@@ -142,60 +150,62 @@ export default function Home() {
   };
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-      >
-        <div className="demo-logo-vertical" />
-        <Menu
-          theme="dark"
-          defaultSelectedKeys={["1"]}
-          mode="inline"
-          items={items}
-        />
-      </Sider>
-      <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
-        <Content style={{ margin: "0 16px" }}>
-          <Breadcrumb style={{ margin: "16px 0" }}>
-            <Item>Home</Item>
-            <Item>AI Chat</Item>
-          </Breadcrumb>
-          <Button
-            onClick={() => {
-              db.startNewConversation();
-            }}
-          >
-            New
-          </Button>
-          <ChatTabBar
-            props={{
-              conversations: conversationList,
-              onTabChange: onTabUpdate,
-            }}
+    <ConfigProvider theme={{ cssVar: true, algorithm: theme.darkAlgorithm }}>
+      <Layout style={{ minHeight: "100vh" }}>
+        <Sider
+          collapsible
+          collapsed={collapsed}
+          onCollapse={(value) => setCollapsed(value)}
+        >
+          <div className="demo-logo-vertical" />
+          <Menu
+            theme="dark"
+            defaultSelectedKeys={["1"]}
+            mode="inline"
+            items={items}
           />
-        </Content>
-        <Footer className="flex items-center justify-between sticky align-text-center z-1 bottom-0 space-x-2">
-          <Input
-            placeholder="Talk to JMAC here"
-            onKeyDown={onInputKeyDown}
-            disabled={chatProgress?.isInProgress}
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-          />
-          <Button //TODO: #9 Make send button bit more interesting
-            disabled={chatProgress?.isInProgress}
-            onClick={async () => {
-              sendChat(userInput);
-              clearUserInputField();
-            }}
-          >
-            Send
-          </Button>
-        </Footer>
+        </Sider>
+        <Layout>
+          <Header style={{ padding: 0, background: colorBgContainer }} />
+          <Content style={{ margin: "0 16px" }}>
+            <Breadcrumb style={{ margin: "16px 0" }}>
+              <Item>Home</Item>
+              <Item>AI Chat</Item>
+            </Breadcrumb>
+            <Button
+              onClick={() => {
+                db.startNewConversation();
+              }}
+            >
+              New
+            </Button>
+            <ChatTabBar
+              props={{
+                conversations: conversationList,
+                onTabChange: onTabUpdate,
+              }}
+            />
+          </Content>
+          <Footer className="flex items-center justify-between sticky align-text-center z-1 bottom-0 space-x-2">
+            <Input
+              placeholder="Talk to JMAC here"
+              onKeyDown={onInputKeyDown}
+              disabled={chatProgress?.isInProgress}
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+            />
+            <Button //TODO: #9 Make send button bit more interesting
+              disabled={chatProgress?.isInProgress}
+              onClick={async () => {
+                sendChat(userInput);
+                clearUserInputField();
+              }}
+            >
+              Send
+            </Button>
+          </Footer>
+        </Layout>
       </Layout>
-    </Layout>
+    </ConfigProvider>
   );
 }
