@@ -1,21 +1,12 @@
-import { ChatMessage, db } from "@/db/db";
-import { Avatar, Card, List, Skeleton, Tag } from "antd";
+import { db } from "@/db/db";
+import { Avatar, List } from "antd";
 import { useLiveQuery } from "dexie-react-hooks";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { LikeOutlined, MessageOutlined, StarOutlined } from "@ant-design/icons";
+import React, { useLayoutEffect, useRef } from "react";
 import { Space } from "antd";
 import "../globals.css";
 
-import {
-  RobotOutlined,
-  TwitterOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import Meta from "antd/es/card/Meta";
-
 export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-    const listRef = useRef(null);
+  const listRef = useRef<List>(null);
 
   const dialogMsgs = useLiveQuery(async () => {
     return db.messages.where("conversationId").equals(dialogId).toArray();
@@ -23,10 +14,13 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
 
   useLayoutEffect(() => {
     if (dialogMsgs && dialogMsgs.length > 0) {
+      listRef.current;
       const lastMessageID = dialogMsgs[dialogMsgs.length - 1];
+      console.log(`MessageID : ${lastMessageID.id}`);
       const element = document.getElementById(
-        `dialogcard-${String(lastMessageID.id)}`
+        `dialogcard-${String(lastMessageID.id)}`,
       );
+      console.log(`dialogElement: ${element}`);
       if (element) {
         element.scrollIntoView();
       } else {
@@ -46,6 +40,7 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
   //             {item.content}
   //           </Skeleton>
 
+  //ICONText will be used later when we add more functions to the chat items
   const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
     <Space>
       {React.createElement(icon)}
@@ -57,12 +52,12 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
     <List
       itemLayout="vertical"
       size="large"
-      ref={listRef}
       dataSource={dialogMsgs}
       renderItem={(item) => (
         <List.Item
           key={item.role}
-          style={{ whiteSpace: 'pre-wrap' }}
+          id={"dialogcard-" + String(item.id)}
+          style={{ whiteSpace: "pre-wrap" }}
           // actions={[  //FOR LATER
           //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
           //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
@@ -89,7 +84,6 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
             description="Placeholder for date and other things"
           />
           {item.content}
-          
         </List.Item>
       )}
     />
