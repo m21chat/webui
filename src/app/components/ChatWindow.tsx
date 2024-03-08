@@ -1,12 +1,15 @@
 import { db } from "@/db/db";
-import { Avatar, List } from "antd";
+import { Avatar, List, Spin } from "antd";
 import { useLiveQuery } from "dexie-react-hooks";
 import React, { useLayoutEffect, useRef } from "react";
 import { Space } from "antd";
 import "../globals.css";
+import { chatProgressAtom } from "../store/chatState";
+import { useAtom } from "jotai";
 
 export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
-  const listRef = useRef<List>(null);
+  const listRef = useRef(null);
+  const [chatProgress, setChatProgress] = useAtom(chatProgressAtom);
 
   const dialogMsgs = useLiveQuery(async () => {
     return db.messages.where("conversationId").equals(dialogId).toArray();
@@ -70,7 +73,13 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
                 />
               ) : (
                 <Avatar
-                  src={`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${dialogId}`}
+                  src={
+                    chatProgress.isInProgress ? (
+                      <Spin />
+                    ) : (
+                      `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${dialogId}`
+                    )
+                  }
                 />
               )
             }

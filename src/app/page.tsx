@@ -1,43 +1,29 @@
 "use client";
-import {
-  Breadcrumb,
-  Button,
-  Input,
-  Layout,
-  Menu,
-  Typography,
-  theme,
-} from "antd";
+import { Breadcrumb, Button, Input, Layout, Menu, theme } from "antd";
 
 import type { MenuProps } from "antd";
-import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import React, { useEffect, useRef, useState } from "react";
+import { FileOutlined, PieChartOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
 
 import { parseJSON } from "@/utils/parser";
-import useLocalStorage from "use-local-storage";
 
-import { ChatConversation, db } from "@/db/db";
+import { db } from "@/db/db";
 import { ChatTabBar } from "./components/ChatTabBar";
 import Item from "antd/es/list/Item";
 import { useLiveQuery } from "dexie-react-hooks";
+import { useAtom } from "jotai";
+import { chatProgressAtom } from "./store/chatState";
+import { v4 as uuidv4 } from "uuid";
 
 const { Header, Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
 
-const { Paragraph } = Typography;
-
 function getItem(
   label: React.ReactNode,
   key: React.Key,
   icon?: React.ReactNode,
-  children?: MenuItem[]
+  children?: MenuItem[],
 ): MenuItem {
   return {
     key,
@@ -55,9 +41,8 @@ const items: MenuItem[] = [
 export default function Home() {
   const [collapsed, setCollapsed] = useState(true);
   const [currentConversation, SetCurrentConversation] = useState("1");
-
+  const [chatProgress, setChatProgress] = useAtom(chatProgressAtom);
   const [userInput, setUserInput] = useState("");
-  const [botText, setBotText] = useState("");
 
   const {
     token: { colorBgContainer },
@@ -77,6 +62,7 @@ export default function Home() {
     }
 
     setUserInput(input);
+    setChatProgress({ chatId: uuidv4(), isInProgress: true });
     db.addMessage(Number(currentConversation), "user", input, true);
 
     try {
@@ -91,6 +77,7 @@ export default function Home() {
 
       const itr = parseJSON(response.body);
       await processMessages(itr, input);
+      setChatProgress({ isInProgress: false });
     } catch (error) {
       console.log(error);
       // Handle network errors here
@@ -110,27 +97,25 @@ export default function Home() {
       Number(currentConversation),
       "assistant",
       "",
-      false
+      false,
     );
     for await (const item of itr) {
       assistantResponse = assistantResponse.concat(item.message.content);
-      setBotText((prev) => prev.concat(item.message.content));
       db.addMessage(
         Number(currentConversation),
-        'assistant',
+        "assistant",
         assistantResponse,
         false,
-        msgId
+        msgId,
       );
 
-      
       if (item.done) {
         db.addMessage(
           Number(currentConversation),
-          'assistant',
+          "assistant",
           assistantResponse,
           true,
-          msgId
+          msgId,
         );
       }
     }
@@ -204,6 +189,7 @@ export default function Home() {
             placeholder="Talk to JMAC here"
             onKeyDown={onInputKeyDown}
             autoSize
+            disabled={chatProgress?.isInProgress}
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
           />
