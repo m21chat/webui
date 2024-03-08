@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    eslint: true
-};
+const nextConfig = {};
 
 export default nextConfig;

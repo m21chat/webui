@@ -32,15 +32,6 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
 
   if (!dialogMsgs) return <></>;
 
-  // <Skeleton loading={loading} active avatar>
-  //             <List.Item.Meta
-  //               avatar={<Avatar src={item.avatar} />}
-  //               title={<a href={item.href}>{item.title}</a>}
-  //               description={item.description}
-  //             />
-  //             {item.content}
-  //           </Skeleton>
-
   //ICONText will be used later when we add more functions to the chat items
   const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
     <Space>
