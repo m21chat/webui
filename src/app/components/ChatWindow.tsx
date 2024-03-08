@@ -1,7 +1,7 @@
 import { ChatMessage, db } from "@/db/db";
 import { Avatar, Card, List, Skeleton, Tag } from "antd";
 import { useLiveQuery } from "dexie-react-hooks";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { LikeOutlined, MessageOutlined, StarOutlined } from "@ant-design/icons";
 import { Space } from "antd";
 import "../globals.css";
@@ -14,6 +14,9 @@ import {
 import Meta from "antd/es/card/Meta";
 
 export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+    const listRef = useRef(null);
+
   const dialogMsgs = useLiveQuery(async () => {
     return db.messages.where("conversationId").equals(dialogId).toArray();
   });
@@ -54,12 +57,7 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
     <List
       itemLayout="vertical"
       size="large"
-      pagination={{
-        onChange: (page) => {
-          console.log(page);
-        },
-        pageSize: 10,
-      }}
+      ref={listRef}
       dataSource={dialogMsgs}
       renderItem={(item) => (
         <List.Item
