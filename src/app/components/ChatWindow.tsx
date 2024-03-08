@@ -2,14 +2,13 @@ import { db } from "@/db/db";
 import { Avatar, List, Spin } from "antd";
 import { useLiveQuery } from "dexie-react-hooks";
 import React, { useLayoutEffect, useRef } from "react";
-import { Space } from "antd";
 import "../globals.css";
 import { chatProgressAtom } from "../store/chatState";
 import { useAtom } from "jotai";
 
 export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
   const listRef = useRef(null);
-  const [chatProgress, setChatProgress] = useAtom(chatProgressAtom);
+  const [chatProgress] = useAtom(chatProgressAtom);
 
   const dialogMsgs = useLiveQuery(async () => {
     return db.messages.where("conversationId").equals(dialogId).toArray();
@@ -33,12 +32,12 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
   if (!dialogMsgs) return <></>;
 
   //ICONText will be used later when we add more functions to the chat items
-  const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
-    <Space>
-      {React.createElement(icon)}
-      {text}
-    </Space>
-  );
+  //const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
+  //  <Space>
+  //    {React.createElement(icon)}
+  //    {text}
+  //  </Space>
+  //);
 
   return (
     <List
@@ -65,7 +64,7 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
               ) : (
                 <Avatar
                   src={
-                    chatProgress.isInProgress ? (
+                    chatProgress?.isInProgress ? (
                       <Spin />
                     ) : (
                       `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${dialogId}`

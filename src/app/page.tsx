@@ -3,7 +3,7 @@ import { Breadcrumb, Button, Input, Layout, Menu, theme } from "antd";
 
 import type { MenuProps } from "antd";
 import { FileOutlined, PieChartOutlined } from "@ant-design/icons";
-import React, { useState } from "react";
+import React, { useState, KeyboardEvent } from "react";
 
 import { parseJSON } from "@/utils/parser";
 
@@ -76,8 +76,8 @@ export default function Home() {
       }
 
       const itr = parseJSON(response.body);
-      await processMessages(itr, input);
-      setChatProgress({ isInProgress: false });
+      await processMessages(itr);
+      setChatProgress({ chatId: uuidv4(), isInProgress: false });
     } catch (error) {
       console.log(error);
       // Handle network errors here
@@ -91,7 +91,7 @@ export default function Home() {
    * @param userInput The user input message.
    * @returns {Promise<void>}
    */
-  async function processMessages(itr, userInput): Promise<void> {
+  async function processMessages(itr: any): Promise<void> {
     let assistantResponse = "";
     const msgId = await db.addMessage(
       Number(currentConversation),
@@ -134,8 +134,8 @@ export default function Home() {
     setUserInput("");
   };
 
-  const onInputKeyDown = (e: KeyboardEvent) => {
-    if (e.code === "Enter" && e.ctrlKey && userInput !== "") {
+  const onInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.code === "Enter" && event.ctrlKey && userInput !== "") {
       sendChat(userInput);
       clearUserInputField();
     }
@@ -188,7 +188,6 @@ export default function Home() {
           <Input
             placeholder="Talk to JMAC here"
             onKeyDown={onInputKeyDown}
-            autoSize
             disabled={chatProgress?.isInProgress}
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}

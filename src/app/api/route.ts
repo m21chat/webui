@@ -1,5 +1,4 @@
 import { generateChat } from "@/lib/api/ollamaservice";
-import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -15,5 +14,9 @@ export async function POST(request: NextRequest) {
     ],
   });
 
-  return result.response;
+  const userResponse = result.response;
+
+  if (userResponse) {
+    return userResponse;
+  }
 }

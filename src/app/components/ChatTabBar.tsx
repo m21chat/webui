@@ -1,7 +1,6 @@
 //TODOLIST:
 // - ADD Chat badge to count how many convo there is in each tab.
 
-
 import type { DragEndEvent } from "@dnd-kit/core";
 import { DndContext, PointerSensor, useSensor } from "@dnd-kit/core";
 import {
@@ -12,7 +11,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import React, { useEffect, useState } from "react";
-import { Tabs, TabsProps } from "antd";
+import { Tabs } from "antd";
 import { ChatConversation } from "@/db/db";
 import { ChatWindow } from "./ChatWindow";
 
@@ -42,16 +41,13 @@ const DraggableTabNode = ({ className, ...props }: DraggableTabPaneProps) => {
 };
 
 interface ChatTabBarprops {
-  conversations: ChatConversation[],
-  onTabChange: (activeKey:string) => void
+  conversations: ChatConversation[];
+  onTabChange: (activeKey: string) => void;
 }
 
-export const ChatTabBar: React.FC<{ props:ChatTabBarprops }> = ({
-  props,
-}) => {
+export const ChatTabBar: React.FC<{ props: ChatTabBarprops }> = ({ props }) => {
   if (!props || !props.conversations) return <div>No chat</div>;
   const [items, setItems] = useState([]);
-  const [activeTab, setActiveTab] = useState("1")
 
   const sensor = useSensor(PointerSensor, {
     activationConstraint: { distance: 10 },
@@ -60,8 +56,8 @@ export const ChatTabBar: React.FC<{ props:ChatTabBarprops }> = ({
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
       setItems((prev) => {
-        const activeIndex = prev.findIndex((i) => i.key === active.id);
-        const overIndex = prev.findIndex((i) => i.key === over?.id);
+        const activeIndex = prev.findIndex((i: any) => i.key === active.id);
+        const overIndex = prev.findIndex((i: any) => i.key === over?.id);
         return arrayMove(prev, activeIndex, overIndex);
       });
     }
@@ -71,7 +67,7 @@ export const ChatTabBar: React.FC<{ props:ChatTabBarprops }> = ({
     const buildTabs = () => {
       const tablist: any = [];
 
-      props.conversations.map((convo, idx) => {
+      props.conversations.map((convo) => {
         const tab = {
           key: convo.id?.toString(),
           label: `Dialog ${convo.id}`,
@@ -91,7 +87,7 @@ export const ChatTabBar: React.FC<{ props:ChatTabBarprops }> = ({
       renderTabBar={(tabBarProps, DefaultTabBar) => (
         <DndContext sensors={[sensor]} onDragEnd={onDragEnd}>
           <SortableContext
-            items={items.map((i) => i.key)}
+            items={items.map((i: any) => i.key)}
             strategy={horizontalListSortingStrategy}
           >
             <DefaultTabBar {...tabBarProps}>
