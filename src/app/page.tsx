@@ -2,26 +2,25 @@
 import {
   Breadcrumb,
   Button,
+  ConfigProvider,
   Input,
   Layout,
   Menu,
-  ConfigProvider,
   theme,
 } from "antd";
 
-import type { MenuProps } from "antd";
-import { FileOutlined, PieChartOutlined } from "@ant-design/icons";
-import React, { useState, KeyboardEvent } from "react";
-
 import { parseJSON } from "@/utils/parser";
-
+import { FileOutlined, CommentOutlined } from "@ant-design/icons";
+import type { MenuProps } from "antd";
+import React, { KeyboardEvent, useState } from "react";
+import IconAI from "./icons/ai.svg";
 import { db } from "@/db/db";
-import { ChatTabBar } from "./components/ChatTabBar";
 import Item from "antd/es/list/Item";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useAtom } from "jotai";
-import { chatProgressAtom } from "./store/chatState";
 import { v4 as uuidv4 } from "uuid";
+import { ChatTabBar } from "./components/ChatTabBar";
+import { chatProgressAtom } from "./store/chatState";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -42,9 +41,10 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem("AI Chat", "1", <PieChartOutlined />),
+  getItem("AI Chat", "1", <CommentOutlined />),
   getItem("Settings", "2", <FileOutlined />),
 ];
+console.log(<IconAI />);
 
 export default function Home() {
   const [collapsed, setCollapsed] = useState(true);
