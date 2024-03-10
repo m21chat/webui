@@ -93,7 +93,7 @@ export default function Home() {
   };
 
   /**
-   * Processes the messages received from the server and updates the assistant response.
+   * Processes the messages received from the server and updates the assistant response..
    *
    * @param itr The iterator containing the messages received from the server.
    * @param userInput The user input message.
