@@ -1,5 +1,6 @@
 "use client";
 import {
+  Alert,
   Breadcrumb,
   Button,
   ConfigProvider,
@@ -71,12 +72,21 @@ export default function Home() {
 
     setUserInput(input);
     setChatProgress({ chatId: uuidv4(), isInProgress: true });
+    ``;
     db.addMessage(Number(currentConversation), "user", input, true);
 
     try {
-      const response = await fetch("http://localhost:3000/api", {
+      const response = await fetch("https://api.m21.chat/chat", {
         method: "POST",
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({
+          model: "solar",
+          messages: [
+            {
+              role: "user",
+              content: input,
+            },
+          ],
+        }),
       });
 
       if (!response.body) {
@@ -151,7 +161,7 @@ export default function Home() {
 
   return (
     <ConfigProvider theme={{ cssVar: true, algorithm: theme.darkAlgorithm }}>
-      <Layout style={{ minHeight: "100vh" }}>
+      <Layout style={{ minHeight: "10vh" }}>
         <Sider
           collapsible
           collapsed={collapsed}
@@ -166,12 +176,14 @@ export default function Home() {
           />
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }} />
+          <div className="sticky top-0 z-10 w-full h-24">
+            <Alert
+              className="flex justify-center items-center"
+              message="This is a alpha version. Report any bugs at github.com/m21chat"
+              banner
+            />
+          </div>
           <Content style={{ margin: "0 16px" }}>
-            <Breadcrumb style={{ margin: "16px 0" }}>
-              <Item>Home</Item>
-              <Item>AI Chat</Item>
-            </Breadcrumb>
             <Button
               onClick={() => {
                 db.startNewConversation();

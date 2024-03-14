@@ -14,7 +14,6 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
   const dialogMsgs = useLiveQuery(async () => {
     return db.messages.where("conversationId").equals(dialogId).toArray();
   });
-
   useLayoutEffect(() => {
     if (dialogMsgs && dialogMsgs.length > 0) {
       listRef.current;
@@ -29,6 +28,7 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
       }
     }
   }, [dialogMsgs]);
+
   useEffect(() => {
     const codeBlocks = document.querySelectorAll("pre code");
 

@@ -31,3 +31,21 @@ body {
     text-wrap: balance;
   }
 }
+
+.warning-banner {
+  background-color: yellow; /* Base yellow color */
+  color: black; /* Text color for content within the banner */
+  padding: 1rem; /* Padding for spacing around content */
+  position: relative; /* Needed for pseudo-element to work */
+}
+
+.warning-banner::after {
+  content: ""; /* Add content to create the pseudo-element */
+  position: absolute; /* Position the element on top of the banner */
+  top: 0; /* Align to the top of the banner */
+  left: 0; /* Align to the left of the banner */
+  width: 100%; /* Span the full width of the banner */
+  height: 50%; /* Set the height for the black stripe (half the banner height) */
+  background-color: black; /* Black color for the stripe */
+  z-index: -1; /* Place the stripe behind the content */
+}
