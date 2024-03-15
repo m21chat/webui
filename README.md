@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# M21.chat: The AI That Works for Everyone
 
-## Getting Started
+## Have a private, insightful conversation with a friendly AI – no matter who you are or how you access the web.
 
-First, run the development server:
+## Our goals
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Privacy First: Your chats are yours alone. We never store data or track your conversations. Period.
+- Unmatched Accessibility: Whether you're using a screen reader, keyboard navigation, or even the most basic technology, M21.chat adapts to your needs.
+- Zero Barriers: We're built with inclusivity at the core. No fancy tech required – just a browser and your curiosity.
+- Always Evolving: We're constantly improving accessibility with the help of our community. Got feedback? We're all ears!
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Additional Considerations for Accessibility
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- ARIA Landmarks: Use clear ARIA landmarks to help screen readers navigate the interface efficiently.
+- Keyboard Support: Ensure all interactive elements can be accessed and used with a keyboard.
+- High-Contrast Mode: Provide a high-contrast mode for users with visual impairments.
+- Alternative Text: Include meaningful alternative text for any non-text content.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Notes on the Tech Stack
 
-## Learn More
+- NextJS: A great framework for both performance and developer experience.
+- Tailwind: CSS framework that adds flexibility without sacrificing accessibility.
+- Ant.design: A well-regarded component library. Ensure accessibility features are carefully reviewed and implemented.
 
-To learn more about Next.js, take a look at the following resources:
+## Help wanted
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+If you have experience with ARIA Landmarks, keyboard support, or high-contrast mode, please share your experience and consider to contribute to M21.chat.
