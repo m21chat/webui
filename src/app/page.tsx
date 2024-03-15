@@ -4,9 +4,11 @@ import {
   Breadcrumb,
   Button,
   ConfigProvider,
+  Flex,
   Input,
   Layout,
   Menu,
+  Skeleton,
   theme,
 } from "antd";
 
@@ -140,9 +142,6 @@ export default function Home() {
   }
 
   //TODO: #7 Make waiting for messages load less boring
-  if (!conversationList) {
-    return <div>No dialog</div>;
-  }
 
   const onTabUpdate = (tabId: string) => {
     SetCurrentConversation(tabId);
@@ -161,21 +160,13 @@ export default function Home() {
 
   return (
     <ConfigProvider theme={{ cssVar: true, algorithm: theme.darkAlgorithm }}>
-      <Layout style={{ minHeight: "10vh" }}>
-        <Sider
-          collapsible
-          collapsed={collapsed}
-          onCollapse={(value) => setCollapsed(value)}
+      <Layout>
+        <Skeleton
+          active
+          loading={!conversationList}
+          avatar
+          paragraph={{ rows: 4 }}
         >
-          <div className="demo-logo-vertical" />
-          <Menu
-            theme="dark"
-            defaultSelectedKeys={["1"]}
-            mode="inline"
-            items={items}
-          />
-        </Sider>
-        <Layout>
           <div className="sticky top-0 z-10 w-full h-24">
             <Alert
               className="flex justify-center items-center"
@@ -216,7 +207,7 @@ export default function Home() {
               Send
             </Button>
           </Footer>
-        </Layout>
+        </Skeleton>
       </Layout>
     </ConfigProvider>
   );
