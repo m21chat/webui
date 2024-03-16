@@ -1,4 +1,4 @@
-import Dexie, { Table } from "dexie";
+import Dexie, { Table, Transaction } from "dexie";
 
 export interface ChatMessage {
   id?: number;
@@ -26,6 +26,11 @@ export class ClientDatabase extends Dexie {
     this.version(3).stores({
       conversations: "++id, model",
       messages: "++id, conversationId, role, content, complete",
+    });
+    this.on("populate", (trans: any) => {
+      trans.conversations.add({
+        model: "solar",
+      });
     });
   }
 

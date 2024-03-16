@@ -26,7 +26,7 @@ export default function Home() {
   const [userInput, setUserInput] = useState("");
 
   const conversationList = useLiveQuery(async () => {
-    return db.conversations.toArray();
+    return db.conversations?.toArray();
   });
 
   /**
