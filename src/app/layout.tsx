@@ -8,6 +8,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <title>m21.chat - Worlds most accessible accessibleAI</title>
+      </head>
       <body>
         <AntdRegistry>{children}</AntdRegistry>
       </body>

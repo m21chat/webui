@@ -5,7 +5,7 @@ export interface ChatMessage {
   conversationId: number;
   role: string;
   content: string;
-  complete: boolean
+  complete: boolean;
   images?: string;
 }
 
@@ -21,6 +21,7 @@ export class ClientDatabase extends Dexie {
   conversations!: Table<ChatConversation>;
 
   constructor() {
+    console.log("Init DB");
     super("jmac");
     this.version(3).stores({
       conversations: "++id, model",
@@ -32,19 +33,25 @@ export class ClientDatabase extends Dexie {
     const dialogId = await this.conversations.add({
       model: "solar",
     });
-    return dialogId as number
+    return dialogId as number;
   }
 
-  public async addMessage(conversationId:number, role:string, message:string, complete:boolean, messageId?:number) {
+  public async addMessage(
+    conversationId: number,
+    role: string,
+    message: string,
+    complete: boolean,
+    messageId?: number,
+  ) {
     const msgId = await this.messages.put({
-      id:messageId,
+      id: messageId,
       role: role,
-      conversationId:conversationId,
-      complete:complete,
-      content:message
-    })
-    return msgId as number
-  } 
+      conversationId: conversationId,
+      complete: complete,
+      content: message,
+    });
+    return msgId as number;
+  }
 
   // public async addDialog(converstationId:number, userMsg:string, assistantMsg:string) {
   //   this.messages.add({
@@ -58,11 +65,11 @@ export class ClientDatabase extends Dexie {
   //     role: "assistant",
   //     content: assistantMsg,
   //   });
-  //   console.log("🚀 ~ ClientDatabase ~ addDialog ~ assistantResult:", assistantResult)  
+  //   console.log("🚀 ~ ClientDatabase ~ addDialog ~ assistantResult:", assistantResult)
   // }
 
-  public deleteDatabase(dbname:string) {
-    db.delete()
+  public deleteDatabase(dbname: string) {
+    db.delete();
   }
 }
 

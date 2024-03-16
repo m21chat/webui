@@ -43,6 +43,7 @@ const DraggableTabNode = ({ className, ...props }: DraggableTabPaneProps) => {
 interface ChatTabBarprops {
   conversations: ChatConversation[];
   onTabChange: (activeKey: string) => void;
+  onNewTab: () => void;
 }
 
 export const ChatTabBar: React.FC<{ props: ChatTabBarprops }> = ({ props }) => {
@@ -52,6 +53,15 @@ export const ChatTabBar: React.FC<{ props: ChatTabBarprops }> = ({ props }) => {
   const sensor = useSensor(PointerSensor, {
     activationConstraint: { distance: 10 },
   });
+  const onEdit = (
+    targetKey: React.MouseEvent | React.KeyboardEvent | string,
+    action: "add" | "remove",
+  ) => {
+    if (action === "add") {
+      props.onNewTab();
+    } else {
+    }
+  };
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
@@ -83,7 +93,9 @@ export const ChatTabBar: React.FC<{ props: ChatTabBarprops }> = ({ props }) => {
   return (
     <Tabs
       items={items}
-      onChange={props.onTabChange}
+      type="editable-card"
+      onEdit={onEdit}
+      onTabClick={props.onTabChange}
       renderTabBar={(tabBarProps, DefaultTabBar) => (
         <DndContext sensors={[sensor]} onDragEnd={onDragEnd}>
           <SortableContext

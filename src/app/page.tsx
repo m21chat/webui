@@ -1,63 +1,29 @@
 "use client";
 import {
   Alert,
-  Breadcrumb,
   Button,
   ConfigProvider,
-  Flex,
   Input,
   Layout,
-  Menu,
   Skeleton,
   theme,
 } from "antd";
 
 import { parseJSON } from "@/utils/parser";
-import { FileOutlined, CommentOutlined } from "@ant-design/icons";
-import type { MenuProps } from "antd";
 import React, { KeyboardEvent, useState } from "react";
-import IconAI from "./icons/ai.svg";
 import { db } from "@/db/db";
-import Item from "antd/es/list/Item";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { ChatTabBar } from "./components/ChatTabBar";
 import { chatProgressAtom } from "./store/chatState";
 
-const { Header, Content, Footer, Sider } = Layout;
-
-type MenuItem = Required<MenuProps>["items"][number];
-
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[],
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  } as MenuItem;
-}
-
-const items: MenuItem[] = [
-  getItem("AI Chat", "1", <CommentOutlined />),
-  getItem("Settings", "2", <FileOutlined />),
-];
-console.log(<IconAI />);
+const { Content, Footer } = Layout;
 
 export default function Home() {
-  const [collapsed, setCollapsed] = useState(true);
   const [currentConversation, SetCurrentConversation] = useState("1");
   const [chatProgress, setChatProgress] = useAtom(chatProgressAtom);
   const [userInput, setUserInput] = useState("");
-
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
 
   const conversationList = useLiveQuery(async () => {
     return db.conversations.toArray();
@@ -74,7 +40,6 @@ export default function Home() {
 
     setUserInput(input);
     setChatProgress({ chatId: uuidv4(), isInProgress: true });
-    ``;
     db.addMessage(Number(currentConversation), "user", input, true);
 
     try {
@@ -141,14 +106,16 @@ export default function Home() {
     }
   }
 
-  //TODO: #7 Make waiting for messages load less boring
-
-  const onTabUpdate = (tabId: string) => {
-    SetCurrentConversation(tabId);
-  };
-
   const clearUserInputField = () => {
     setUserInput("");
+  };
+
+  /**
+   * EVENT FUNCTIONS
+   */
+  const onTabUpdate = (tabId: string) => {
+    console.log(`Change tab to ${tabId}`);
+    SetCurrentConversation(tabId);
   };
 
   const onInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -159,15 +126,28 @@ export default function Home() {
   };
 
   return (
-    <ConfigProvider theme={{ cssVar: true, algorithm: theme.darkAlgorithm }}>
-      <Layout>
+    <ConfigProvider
+      theme={{
+        cssVar: true,
+        algorithm: theme.darkAlgorithm,
+        token: {
+          // Seed Token
+          colorPrimary: "#00b96b",
+          borderRadius: 10,
+
+          // Alias Token
+        },
+      }}
+    >
+      <div className="mx-5 mb-5">
         <Skeleton
+          style={{ margin: "2em" }}
           active
           loading={!conversationList}
           avatar
           paragraph={{ rows: 4 }}
         >
-          <div className="sticky top-0 z-10 w-full h-24">
+          <div className="sticky top-0 z-10 w-full h-10">
             <Alert
               className="flex justify-center items-center"
               message="This is a alpha version. Report any bugs at github.com/m21chat"
@@ -175,23 +155,22 @@ export default function Home() {
             />
           </div>
           <Content style={{ margin: "0 16px" }}>
-            <Button
-              onClick={() => {
-                db.startNewConversation();
-              }}
-            >
-              New
-            </Button>
-            <ChatTabBar
-              props={{
-                conversations: conversationList,
-                onTabChange: onTabUpdate,
-              }}
-            />
+            {!conversationList ? (
+              <p>Loading conversations</p>
+            ) : (
+              <ChatTabBar
+                props={{
+                  conversations: conversationList,
+                  onTabChange: onTabUpdate,
+                  onNewTab: () => db.startNewConversation(),
+                }}
+              />
+            )}
           </Content>
-          <Footer className="flex items-center justify-between sticky align-text-center z-1 bottom-0 space-x-2">
+          <Footer className="flex items-center justify-between sticky align-text-center z-1 bottom-3 space-x-2">
             <Input
               placeholder="Talk to JMAC here"
+              aria-label="Chat input"
               onKeyDown={onInputKeyDown}
               disabled={chatProgress?.isInProgress}
               value={userInput}
@@ -208,7 +187,7 @@ export default function Home() {
             </Button>
           </Footer>
         </Skeleton>
-      </Layout>
+      </div>
     </ConfigProvider>
   );
 }

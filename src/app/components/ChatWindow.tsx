@@ -91,6 +91,7 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
               item.role === "user" ? (
                 <Avatar
                   src={`https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${dialogId}`}
+                  alt="User avatar"
                 />
               ) : (
                 <Avatar
@@ -101,12 +102,13 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
                       `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${dialogId}`
                     )
                   }
+                  alt="Bot avatar"
                 />
               )
             }
             title={
               item.role === "user"
-                ? "Haplorhini"
+                ? "Human"
                 : `JMAC v${process.env.NEXT_PUBLIC_APP_VERSION}`
             }
             description="Placeholder for date and other things"
