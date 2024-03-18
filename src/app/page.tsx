@@ -41,7 +41,7 @@ export default function Home() {
     setUserInput(input);
     setChatProgress({ chatId: uuidv4(), isInProgress: true });
     db.addMessage(Number(currentConversation), "user", input, true);
-
+    //const chatContext = db.getLatestMessages(currentConversation, 5); //WIP, for now just use the last 5 messages
     try {
       const response = await fetch("https://api.m21.chat/chat", {
         method: "POST",
@@ -155,6 +155,10 @@ export default function Home() {
             />
           </div>
           <Content style={{ margin: "0 16px" }}>
+            <div className="my-2">
+              <h1>Welcome to M21</h1>
+            </div>
+
             {!conversationList ? (
               <p>Loading conversations</p>
             ) : (
