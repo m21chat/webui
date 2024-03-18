@@ -93,7 +93,7 @@ export const ChatTabBar: React.FC<{ props: ChatTabBarprops }> = ({ props }) => {
   return (
     <Tabs
       items={items}
-      type="editable-card"
+      type="card"
       onEdit={onEdit}
       onTabClick={props.onTabChange}
     />
