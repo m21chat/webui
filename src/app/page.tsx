@@ -137,6 +137,12 @@ export default function Home() {
 
           // Alias Token
         },
+        components: {
+          Tabs: {
+            cardBg: "#b7eb8f",
+            itemColor: "#000",
+          },
+        },
       }}
     >
       <div className="mx-5 mb-5">
