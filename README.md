@@ -1,4 +1,7 @@
 # M21.chat: The AI That Works for Everyone 🤖🌍
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## Have a private, insightful conversation with a friendly AI – no matter who you are or how you access the web.
 
@@ -25,3 +28,25 @@
 ## Help wanted 🤝
 
 If you have experience with ARIA Landmarks, keyboard support, or high-contrast mode, please share your experience and consider to contribute to M21.chat.
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/wegnertm"><img src="https://avatars.githubusercontent.com/u/40865491?v=4?s=100" width="100px;" alt="Teisha Wegner"/><br /><sub><b>Teisha Wegner</b></sub></a><br /><a href="#a11y-wegnertm" title="Accessibility">️️️️♿️</a> <a href="https://github.com/m21chat/webui/issues?q=author%3Awegnertm" title="Bug reports">🐛</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
