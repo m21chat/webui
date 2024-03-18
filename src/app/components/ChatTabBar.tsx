@@ -96,22 +96,6 @@ export const ChatTabBar: React.FC<{ props: ChatTabBarprops }> = ({ props }) => {
       type="editable-card"
       onEdit={onEdit}
       onTabClick={props.onTabChange}
-      renderTabBar={(tabBarProps, DefaultTabBar) => (
-        <DndContext sensors={[sensor]} onDragEnd={onDragEnd}>
-          <SortableContext
-            items={items.map((i: any) => i.key)}
-            strategy={horizontalListSortingStrategy}
-          >
-            <DefaultTabBar {...tabBarProps}>
-              {(node) => (
-                <DraggableTabNode {...node.props} key={node.key}>
-                  {node}
-                </DraggableTabNode>
-              )}
-            </DefaultTabBar>
-          </SortableContext>
-        </DndContext>
-      )}
     />
   );
 };
