@@ -1,11 +1,19 @@
 import { db } from "@/db/db";
-import { Avatar, List, Spin } from "antd";
 import { useLiveQuery } from "dexie-react-hooks";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import "../globals.css";
 import { chatProgressAtom } from "../store/chatState";
 import { useAtom } from "jotai";
 import hljs from "highlight.js";
+import { List, ListItem } from "@chakra-ui/react";
+import {
+  Avatar,
+  Card,
+  CardHeader,
+  CardBody,
+  Text,
+  Stack,
+} from "@chakra-ui/react";
 
 export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
   const listRef = useRef(null);
@@ -62,60 +70,31 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
     });
   };
 
-  //ICONText will be used later when we add more functions to the chat items
-  //const IconText = ({ icon, text }: { icon: React.FC; text: string }) => (
-  //  <Space>
-  //    {React.createElement(icon)}
-  //    {text}
-  //  </Space>
-  //);
-
   return (
-    <List
-      itemLayout="vertical"
-      size="large"
-      dataSource={dialogMsgs}
-      renderItem={(item) => (
-        <List.Item
-          key={item.role}
-          id={"dialogcard-" + String(item.id)}
-          style={{ whiteSpace: "pre-wrap" }}
-          // actions={[  //FOR LATER
-          //   <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-          //   <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
-          //   <IconText icon={MessageOutlined} text="2" key="list-vertical-message" />,
-          // ]}
-        >
-          <List.Item.Meta
-            avatar={
-              item.role === "user" ? (
-                <Avatar
-                  src={`https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${dialogId}`}
-                  alt="User avatar"
-                />
-              ) : (
-                <Avatar
-                  src={
-                    chatProgress?.isInProgress ? (
-                      <Spin />
-                    ) : (
-                      `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${dialogId}`
-                    )
-                  }
-                  alt="Bot avatar"
-                />
-              )
-            }
-            title={
-              item.role === "user"
-                ? "Human"
-                : `JMAC v${process.env.NEXT_PUBLIC_APP_VERSION}`
-            }
-            description="Placeholder for date and other things"
-          />
-          {splittext(item.content)}
-        </List.Item>
-      )}
-    />
+    <List spacing={4}>
+      {dialogMsgs.map((msg) => (
+        <ListItem id={"dialogcard-" + String(msg.id)} key={msg.id}>
+          <Card direction="row" variant="elevated">
+            <Avatar
+              m={2}
+              name="Human"
+              src={
+                msg.role === "user"
+                  ? `https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=${dialogId}`
+                  : `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${dialogId}`
+              }
+            ></Avatar>
+            <Stack>
+              <CardHeader>
+                {msg.role === "user" ? <Text>Human</Text> : <Text>JMac</Text>}
+              </CardHeader>
+              <CardBody>
+                <Text whiteSpace="pre-line">{splittext(msg.content)}</Text>
+              </CardBody>
+            </Stack>
+          </Card>
+        </ListItem>
+      ))}
+    </List>
   );
 };

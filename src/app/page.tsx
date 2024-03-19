@@ -1,13 +1,4 @@
 "use client";
-import {
-  Alert,
-  Button,
-  ConfigProvider,
-  Input,
-  Layout,
-  Skeleton,
-  theme,
-} from "antd";
 
 import { parseJSON } from "@/utils/parser";
 import React, { KeyboardEvent, useState } from "react";
@@ -17,11 +8,15 @@ import { useAtom } from "jotai";
 import { v4 as uuidv4 } from "uuid";
 import { ChatTabBar } from "./components/ChatTabBar";
 import { chatProgressAtom } from "./store/chatState";
-
-const { Content, Footer } = Layout;
+import { Skeleton } from "@chakra-ui/react";
+import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
+import { Input } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 
 export default function Home() {
-  const [currentConversation, SetCurrentConversation] = useState("1");
+  const [currentConversation, SetCurrentConversation] = useState(1);
   const [chatProgress, setChatProgress] = useAtom(chatProgressAtom);
   const [userInput, setUserInput] = useState("");
 
@@ -40,7 +35,7 @@ export default function Home() {
 
     setUserInput(input);
     setChatProgress({ chatId: uuidv4(), isInProgress: true });
-    db.addMessage(Number(currentConversation), "user", input, true);
+    db.addMessage(currentConversation, "user", input, true);
     //const chatContext = db.getLatestMessages(currentConversation, 5); //WIP, for now just use the last 5 messages
     try {
       const response = await fetch("https://api.m21.chat/chat", {
@@ -79,7 +74,7 @@ export default function Home() {
   async function processMessages(itr: any): Promise<void> {
     let assistantResponse = "";
     const msgId = await db.addMessage(
-      Number(currentConversation),
+      currentConversation,
       "assistant",
       "",
       false,
@@ -87,7 +82,7 @@ export default function Home() {
     for await (const item of itr) {
       assistantResponse = assistantResponse.concat(item.message.content);
       db.addMessage(
-        Number(currentConversation),
+        currentConversation,
         "assistant",
         assistantResponse,
         false,
@@ -96,7 +91,7 @@ export default function Home() {
 
       if (item.done) {
         db.addMessage(
-          Number(currentConversation),
+          currentConversation,
           "assistant",
           assistantResponse,
           true,
@@ -113,7 +108,7 @@ export default function Home() {
   /**
    * EVENT FUNCTIONS
    */
-  const onTabUpdate = (tabId: string) => {
+  const onTabUpdate = (tabId: number) => {
     console.log(`Change tab to ${tabId}`);
     SetCurrentConversation(tabId);
   };
@@ -126,78 +121,52 @@ export default function Home() {
   };
 
   return (
-    <ConfigProvider
-      theme={{
-        cssVar: true,
-        algorithm: theme.darkAlgorithm,
-        token: {
-          // Seed Token
-          colorPrimary: "#00b96b",
-          borderRadius: 10,
-
-          // Alias Token
-        },
-        components: {
-          Tabs: {
-            cardBg: "#b7eb8f",
-            itemColor: "#000",
-          },
-        },
-      }}
-    >
-      <div className="mx-5 mb-5">
-        <Skeleton
-          style={{ margin: "2em" }}
-          active
-          loading={!conversationList}
-          avatar
-          paragraph={{ rows: 4 }}
-        >
-          <div className="sticky top-0 z-10 w-full h-10">
-            <Alert
-              className="flex justify-center items-center"
-              message="This is a alpha version. Report any bugs at github.com/m21chat"
-              banner
-            />
-          </div>
-          <Content style={{ margin: "0 16px" }}>
-            <div className="my-2">
-              <h1>Welcome to M21</h1>
-            </div>
-
-            {!conversationList ? (
-              <p>Loading conversations</p>
-            ) : (
-              <ChatTabBar
-                props={{
-                  conversations: conversationList,
-                  onTabChange: onTabUpdate,
-                  onNewTab: () => db.startNewConversation(),
-                }}
-              />
-            )}
-          </Content>
-          <Footer className="flex items-center justify-between sticky align-text-center z-1 bottom-3 space-x-2">
-            <Input
-              placeholder="Talk to JMAC here"
-              aria-label="Chat input"
-              onKeyDown={onInputKeyDown}
-              disabled={chatProgress?.isInProgress}
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-            />
-            <Button //TODO: #9 Make send button bit more interesting
-              disabled={chatProgress?.isInProgress}
-              onClick={async () => {
-                sendChat(userInput);
-                clearUserInputField();
+    <div className="mx-5 mb-5">
+      <Skeleton
+        style={{ margin: "2em" }}
+        isLoaded={conversationList !== undefined}
+      >
+        <div className="sticky top-0 z-10 w-full h-10">
+          <Alert status="warning">
+            <AlertIcon />
+            <AlertTitle>
+              Alpha version. Only for testing purposes at the moment.
+            </AlertTitle>
+          </Alert>
+        </div>
+        <Container maxW="full" mt={4}>
+          {!conversationList ? (
+            <p>Loading conversations</p>
+          ) : (
+            <ChatTabBar
+              props={{
+                conversations: conversationList,
+                onTabChange: onTabUpdate,
+                onNewTab: () => db.startNewConversation(),
               }}
-            >
-              Send
-            </Button>
-          </Footer>
-        </Skeleton>
-      </div>
-    </ConfigProvider>
+            />
+          )}
+        </Container>
+        <Stack>
+          <Input
+            placeholder="Talk to JMAC here"
+            aria-label="Chat input"
+            onKeyDown={onInputKeyDown}
+            disabled={chatProgress?.isInProgress}
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+          />
+          <Button //TODO: #9 Make send button bit more interesting
+            disabled={chatProgress?.isInProgress}
+            onClick={async () => {
+              sendChat(userInput);
+              clearUserInputField();
+            }}
+          >
+            Send
+          </Button>
+        </Stack>
+      </Skeleton>
+    </div>
   );
 }

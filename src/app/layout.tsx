@@ -1,7 +1,7 @@
 "use client";
 import "./globals.css";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "highlight.js/styles/tokyo-night-dark.css";
+import { Providers } from "./providers";
 
 export default function RootLayout({
   children,
@@ -13,7 +13,7 @@ export default function RootLayout({
         <title>m21.chat - Worlds most accessible accessibleAI</title>
       </head>
       <body>
-        <AntdRegistry>{children}</AntdRegistry>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
