@@ -109,8 +109,8 @@ export default function Home() {
    * EVENT FUNCTIONS
    */
   const onTabUpdate = (tabId: number) => {
-    console.log(`Change tab to ${tabId}`);
-    SetCurrentConversation(tabId);
+    console.log(`Change tab to ${tabId + 1}`);
+    SetCurrentConversation(tabId + 1);
   };
 
   const onInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {

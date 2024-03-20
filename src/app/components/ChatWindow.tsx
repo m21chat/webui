@@ -55,7 +55,6 @@ export const ChatWindow: React.FC<{ dialogId: number }> = ({ dialogId }) => {
       if (index % 2 === 1) {
         const [language, ...codeLines] = part.split("\n");
         const code = codeLines.join("\n").trim();
-        console.log(`Detect lang: ${language}, code: ${code}`);
         if (code) {
           return (
             <pre key={index}>
