@@ -23,7 +23,7 @@ interface ChatTabBarprops {
 
 interface ChatTab {
   // Keep the interface for clarity
-  key: string;
+  key?: string;
   label: string;
   content: React.ReactNode; // Updated to 'content'
 }
